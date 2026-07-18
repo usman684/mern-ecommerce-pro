@@ -88,9 +88,12 @@ function Cart() {
             <span>Rs. {totalPrice.toLocaleString()}</span>
           </div>
 
-          <button className="w-full bg-blue-600 text-white py-3 rounded-md font-semibold mt-6 hover:bg-blue-700 transition-colors">
+          <Link
+            to="/checkout"
+            className="block text-center w-full bg-blue-600 text-white py-3 rounded-md font-semibold mt-6 hover:bg-blue-700 transition-colors"
+          >
             Proceed to Checkout
-          </button>
+          </Link>
         </div>
       </div>
     </div>

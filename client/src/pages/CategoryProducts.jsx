@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import toast from "react-hot-toast";
+import api from "../api/axios";
 
 function CategoryProducts() {
   const { categoryId } = useParams();
-  const [peoducts, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

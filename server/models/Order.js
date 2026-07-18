@@ -32,6 +32,10 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: "Cash on Delivery",
     },
+    paymentResult: {
+      id: { type: String },
+      status: { type: String },
+    },
     itemsPrice: { type: Number, required: true, default: 0 },
     shippingPrice: { type: Number, required: true, default: 0 },
     totalPrice: { type: Number, required: true, default: 0 },
@@ -41,6 +45,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
+    },
+    trackingId: {
+      type: String,
+      default: null,
     },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },

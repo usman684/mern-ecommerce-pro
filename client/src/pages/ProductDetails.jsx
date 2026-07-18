@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
+import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { Heart } from "lucide-react";
+import ReviewSection from "../components/ReviewSection";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -13,18 +15,19 @@ function ProductDetails() {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
+  const fetchProduct = async () => {
+    try {
+      const { data } = await api.get(`/products/${id}`);
+      setProduct(data);
+    } catch (error) {
+      toast.error("Product not found.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const { data } = await api.get(`/products/${id}`);
-        setProduct(data);
-      } catch (error) {
-        toast.error("Product not found.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProduct();
   }, [id]);
 
@@ -39,6 +42,7 @@ function ProductDetails() {
       </div>
     );
   }
+
   if (!product) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -111,13 +115,13 @@ function ProductDetails() {
 
           {product.stock > 0 && (
             <div className="mt-6 flex items-center gap-3">
-              <label className="text-sm text-gray-600"> Quantity:</label>
+              <label className="text-sm text-gray-600">Quantity:</label>
               <div className="flex items-center border border-gray-300 rounded-md">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   className="px-3 py-1 text-gray-600 hover:bg-gray-100"
                 >
-                  -
+                  −
                 </button>
                 <span className="px-4 py-1 border-x border-gray-300">
                   {quantity}
@@ -143,6 +147,8 @@ function ProductDetails() {
           </button>
         </div>
       </div>
+
+      <ReviewSection product={product} onReviewAdded={fetchProduct} />
     </div>
   );
 }
