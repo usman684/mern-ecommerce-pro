@@ -32,12 +32,10 @@ export const getProducts = async (req, res) => {
     const pageSize = Number(req.query.limit) || 12;
     const page = Number(req.query.page) || 1;
 
-    //Search by name
     const keyword = req.query.keyword
       ? { name: { $regex: req.query.keyword, $options: "i" } }
       : {};
 
-    //Filter by category
     const categoryFilter = req.query.category
       ? { category: req.query.category }
       : {};
@@ -125,7 +123,7 @@ export const deleteProduct = async (req, res) => {
 
 // @desc    Create a product review
 // @route   POST /api/products/:id/reviews
-// @access  Private (logged-in user)
+
 export const createProductReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
