@@ -79,7 +79,6 @@ function App() {
                 <Route path="users" element={<ManageUsers />} />
               </Route>
 
-              {/* 404 — hamesha sabse aakhir mein, wildcard route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Footer />
