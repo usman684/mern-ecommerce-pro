@@ -4,7 +4,6 @@ import Home from "./pages/Home.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
-import CategoryList from "./components/CategoryList.jsx";
 import CategoryProducts from "./pages/CategoryProducts.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import Cart from "./pages/Cart.jsx";
@@ -27,6 +26,11 @@ import ProductForm from "./pages/admin/ProductForm.jsx";
 import ManageCategories from "./pages/admin/ManageCategories.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
 import ManageUsers from "./pages/admin/ManageUsers.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import About from "./pages/About.jsx";
+import Contact from "./pages/Contact.jsx";
+import FAQs from "./pages/FAQs.jsx";
+import CustomerService from "./pages/CustomerService.jsx";
 
 function App() {
   return (
@@ -35,7 +39,6 @@ function App() {
         <WishlistProvider>
           <BrowserRouter>
             <Navbar />
-            <CategoryList />
             <Toaster position="top-center" />
             <Routes>
               <Route path="/" element={<Home />} />
@@ -54,6 +57,10 @@ function App() {
               <Route path="/order-success/:id" element={<OrderSuccess />} />
               <Route path="/my-orders" element={<MyOrders />} />
               <Route path="/order/:id" element={<OrderDetails />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faqs" element={<FAQs />} />
+              <Route path="/customer-service" element={<CustomerService />} />
 
               <Route
                 path="/admin"
@@ -71,6 +78,9 @@ function App() {
                 <Route path="orders" element={<ManageOrders />} />
                 <Route path="users" element={<ManageUsers />} />
               </Route>
+
+              {/* 404 — hamesha sabse aakhir mein, wildcard route */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
             <Footer />
           </BrowserRouter>

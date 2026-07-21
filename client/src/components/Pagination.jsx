@@ -21,10 +21,11 @@ function Pagination({ currentPage, totalPages }) {
       >
         Previous
       </button>
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
         <button
-          onClick={() => goToPage(page)}
           key={page}
+          onClick={() => goToPage(page)}
           className={`px-4 py-2 border rounded-md ${
             page === currentPage
               ? "bg-blue-600 text-white border-blue-600"
@@ -32,8 +33,9 @@ function Pagination({ currentPage, totalPages }) {
           }`}
         >
           {page}
-        </button>;
-      })}
+        </button>
+      ))}
+
       <button
         onClick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}

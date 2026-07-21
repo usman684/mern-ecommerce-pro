@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { Heart } from "lucide-react";
 import ReviewSection from "../components/ReviewSection";
+import Breadcrumbs from "../components/Breadcrumbs";
+import ProductCard from "../components/ProductCard";
 
 function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
@@ -19,6 +22,17 @@ function ProductDetails() {
     try {
       const { data } = await api.get(`/products/${id}`);
       setProduct(data);
+
+      // Related products fetch karo (same category, current product exclude karo)
+      if (data.category?._id) {
+        const relatedRes = await api.get(
+          `/products?category=${data.category._id}`,
+        );
+        const filtered = relatedRes.data.products.filter(
+          (p) => p._id !== data._id,
+        );
+        setRelatedProducts(filtered.slice(0, 4));
+      }
     } catch (error) {
       toast.error("Product not found.");
       console.error(error);
@@ -28,6 +42,7 @@ function ProductDetails() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchProduct();
   }, [id]);
 
@@ -55,6 +70,20 @@ function ProductDetails() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
+      <Breadcrumbs
+        items={[
+          ...(product.category
+            ? [
+                {
+                  label: product.category.name,
+                  path: `/category/${product.category._id}`,
+                },
+              ]
+            : []),
+          { label: product.name },
+        ]}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div className="bg-gray-100 rounded-lg overflow-hidden">
           <img
@@ -149,6 +178,20 @@ function ProductDetails() {
       </div>
 
       <ReviewSection product={product} onReviewAdded={fetchProduct} />
+
+      {/* Related Products */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            You May Also Like
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedProducts.map((related) => (
+              <ProductCard key={related._id} product={related} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,26 +1,37 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
-import ProductCard from "../components/ProductCard.jsx";
-import FilterSidebar from "../components/FilterSidebar.jsx";
-import Pagination from "../components/Pagiination.jsx";
+import ProductCard from "../components/ProductCard";
+import CategorySection from "../components/CategorySection";
+import FilterSidebar from "../components/FilterSidebar";
+import Pagination from "../components/Pagination";
 import toast from "react-hot-toast";
 import { ShoppingBag, Truck, ShieldCheck, Headphones } from "lucide-react";
 
 function Home() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
-
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
   const currentPage = searchParams.get("page") || "1";
 
+  const isFiltering = keyword || minPrice || maxPrice;
+
+  // Filtered/searched products ke liye state
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+
+  // Category-wise homepage ke liye state
+  const [categorySections, setCategorySections] = useState([]);
+  const [homeLoading, setHomeLoading] = useState(true);
+
+  // Jab search/filter active ho — normal filtered grid fetch karo
   useEffect(() => {
-    const fetchProducts = async () => {
+    if (!isFiltering) return;
+
+    const fetchFilteredProducts = async () => {
       setLoading(true);
       try {
         const query = new URLSearchParams();
@@ -28,6 +39,7 @@ function Home() {
         if (minPrice) query.set("minPrice", minPrice);
         if (maxPrice) query.set("maxPrice", maxPrice);
         query.set("page", currentPage);
+        query.set("limit", "12");
 
         const { data } = await api.get(`/products?${query.toString()}`);
         setProducts(data.products);
@@ -41,8 +53,37 @@ function Home() {
       }
     };
 
-    fetchProducts();
-  }, [keyword, minPrice, maxPrice, currentPage]);
+    fetchFilteredProducts();
+  }, [keyword, minPrice, maxPrice, currentPage, isFiltering]);
+
+  // Jab koi filter na ho — har category ke products fetch karo
+  useEffect(() => {
+    if (isFiltering) return;
+
+    const fetchCategorySections = async () => {
+      setHomeLoading(true);
+      try {
+        const { data: categories } = await api.get("/categories");
+
+        const sections = await Promise.all(
+          categories.map(async (category) => {
+            const { data } = await api.get(
+              `/products?category=${category._id}&limit=4`,
+            );
+            return { category, products: data.products };
+          }),
+        );
+
+        setCategorySections(sections);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setHomeLoading(false);
+      }
+    };
+
+    fetchCategorySections();
+  }, [isFiltering]);
 
   const perks = [
     { icon: Truck, title: "Free Shipping", desc: "On orders over Rs. 5,000" },
@@ -61,21 +102,26 @@ function Home() {
 
   return (
     <div>
-      {/* Hero Section — sirf tab dikhega jab koi search/filter active na ho */}
-      {!keyword && (
-        <div className="bg-linear-to-br from-indigo-600 via-indigo-500 to-blue-500 text-white">
-          <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+      {/* Hero Section */}
+      {!isFiltering && (
+        <div className="relative bg-gray-900 text-white overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
+            alt="Shopping"
+            className="absolute inset-0 w-full h-full object-cover opacity-40"
+          />
+          <div className="relative max-w-7xl mx-auto px-6 py-28 text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
               Shop Smarter with Shopwave
             </h1>
-            <p className="text-indigo-100 text-lg max-w-xl mx-auto mb-8">
+            <p className="text-gray-200 text-lg max-w-xl mx-auto mb-8">
               Discover quality products at unbeatable prices, delivered right to
               your doorstep.
             </p>
 
             <a
               href="#products"
-              className="inline-block bg-white text-indigo-600 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"
+              className="inline-block bg-white text-gray-900 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors"
             >
               Shop Now
             </a>
@@ -84,7 +130,7 @@ function Home() {
       )}
 
       {/* Perks Bar */}
-      {!keyword && (
+      {!isFiltering && (
         <div className="bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
             {perks.map((perk) => (
@@ -104,35 +150,46 @@ function Home() {
         </div>
       )}
 
-      {/* Products Section */}
       <div id="products" className="max-w-7xl mx-auto px-6 py-10">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">
-          {keyword ? `Search results for "${keyword}"` : "Featured Products"}
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          {keyword ? `Search results for "${keyword}"` : "Shop Our Products"}
         </h2>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <FilterSidebar />
+        {/* Filter — hamesha dikhega, chahe category-wise ho ya filtered */}
+        <FilterSidebar />
 
-          <div className="flex-1">
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <p className="text-gray-500 text-lg">Loading products...</p>
+        {isFiltering ? (
+          // Search/Filter active — normal grid dikhao
+          loading ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-gray-500 text-lg">Loading products...</p>
+            </div>
+          ) : products.length === 0 ? (
+            <p className="text-gray-500">No products found.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
               </div>
-            ) : products.length === 0 ? (
-              <p className="text-gray-500">No products found.</p>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <ProductCard key={product._id} product={product} />
-                  ))}
-                </div>
-
-                <Pagination currentPage={page} totalPages={pages} />
-              </>
-            )}
+              <Pagination currentPage={page} totalPages={pages} />
+            </>
+          )
+        ) : // Normal homepage — category-wise sections dikhao
+        homeLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-500 text-lg">Loading products...</p>
           </div>
-        </div>
+        ) : (
+          categorySections.map(({ category, products }) => (
+            <CategorySection
+              key={category._id}
+              category={category}
+              products={products}
+            />
+          ))
+        )}
       </div>
     </div>
   );

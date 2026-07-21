@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Mail, Globe, MessageCircle } from "lucide-react";
+import { ShoppingBag, Mail, Phone, MapPin } from "lucide-react";
 
 function Footer() {
+  const email = "musmanbhutta65@gmail.com";
+  const whatsappNumber = "923286894500";
+  const displayPhone = "0328 6894500"; // apna real number yahan daalo, bina +, spaces ke
+  const locationQuery = "Barkat Market, Lahore"; // apna asli area daal sakte ho
+
   return (
     <footer className="bg-gray-900 text-gray-300 mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -52,47 +57,76 @@ function Footer() {
           </ul>
         </div>
 
-        {/* Customer Service */}
+        {/* Company */}
+        {/* Company */}
         <div>
-          <h4 className="text-white font-semibold mb-4">Customer Service</h4>
+          <h4 className="text-white font-semibold mb-4">Company</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <span className="hover:text-white transition-colors cursor-pointer">
-                Shipping Policy
-              </span>
+              <Link to="/about" className="hover:text-white transition-colors">
+                About Us
+              </Link>
             </li>
             <li>
-              <span className="hover:text-white transition-colors cursor-pointer">
-                Returns & Refunds
-              </span>
-            </li>
-            <li>
-              <span className="hover:text-white transition-colors cursor-pointer">
+              <Link
+                to="/contact"
+                className="hover:text-white transition-colors"
+              >
                 Contact Us
-              </span>
+              </Link>
             </li>
             <li>
-              <span className="hover:text-white transition-colors cursor-pointer">
+              <Link
+                to="/customer-service"
+                className="hover:text-white transition-colors"
+              >
+                Customer Service
+              </Link>
+            </li>
+            <li>
+              <Link to="/faqs" className="hover:text-white transition-colors">
                 FAQs
-              </span>
+              </Link>
             </li>
           </ul>
         </div>
 
-        {/* Social */}
+        {/* Get In Touch */}
         <div>
           <h4 className="text-white font-semibold mb-4">Get In Touch</h4>
-          <div className="flex gap-3">
-            <span className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors cursor-pointer">
-              <Mail size={16} />
-            </span>
-            <span className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors cursor-pointer">
-              <MessageCircle size={16} />
-            </span>
-            <span className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors cursor-pointer">
-              <Globe size={16} />
-            </span>
-          </div>
+          <ul className="space-y-3 text-sm">
+            <li>
+              <a
+                href={`mailto:${email}`}
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Mail size={14} className="text-gray-500" />
+                {email}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Phone size={14} className="text-gray-500" />
+                +92 328 6894500
+              </a>
+            </li>
+            <li>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <MapPin size={14} className="text-gray-500" />
+                {locationQuery}
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 

@@ -1,15 +1,44 @@
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, Heart, User, LogOut } from "lucide-react";
+import { ShoppingBag, Heart, User, LogOut, ChevronDown } from "lucide-react";
 import SearchBar from "./SearchBar";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 
 function Navbar() {
   const { totalItems } = useCart();
   const { wishlistItems } = useWishlist();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const [categories, setCategories] = useState([]);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get("/categories");
+        setCategories(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Dropdown ke bahar click karne pe band ho jaye
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowCategoryMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -28,6 +57,37 @@ function Navbar() {
             Shopwave
           </span>
         </Link>
+
+        {/* Categories Dropdown */}
+        <div className="relative hidden lg:block" ref={menuRef}>
+          <button
+            onClick={() => setShowCategoryMenu((prev) => !prev)}
+            className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+          >
+            Categories
+            <ChevronDown size={16} />
+          </button>
+
+          {showCategoryMenu && (
+            <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
+              {categories.map((category) => (
+                <Link
+                  key={category._id}
+                  to={`/category/${category._id}`}
+                  onClick={() => setShowCategoryMenu(false)}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                >
+                  {category.name}
+                </Link>
+              ))}
+              {categories.length === 0 && (
+                <p className="px-4 py-2 text-sm text-gray-400">
+                  No categories yet
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Search */}
         <div className="flex-1 max-w-lg">
