@@ -19,10 +19,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://192.168.100.13:5173", // <-- apna PC ka IP
-    ],
+    origin: true,
     credentials: true,
   }),
 );
