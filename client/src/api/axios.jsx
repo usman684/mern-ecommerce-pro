@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "http://192.168.100.13:5000/api", // <-- apna IPv4 address
   withCredentials: true,
 });
 
