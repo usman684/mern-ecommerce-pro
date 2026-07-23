@@ -28,47 +28,59 @@ function Cart() {
           {cartItems.map((item) => (
             <div
               key={item._id}
-              className="flex items-center gap-4 bg-white border border-gray-200 rounded-lg p-4"
+              className="flex flex-col sm:flex-row sm:items-center gap-4 bg-white border border-gray-200 rounded-lg p-4"
             >
-              <img
-                src={item.images?.[0] || "https://via.placeholder.com/100"}
-                alt={item.name}
-                className="w-20 h-20 object-cover rounded-md"
-              />
+              <div className="flex items-center gap-4">
+                <img
+                  src={item.images?.[0] || "https://via.placeholder.com/100"}
+                  alt={item.name}
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md shrink-0"
+                />
+                <div className="flex-1 sm:hidden">
+                  <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                  <p className="text-blue-600 font-bold mt-1">
+                    Rs. {item.price.toLocaleString()}
+                  </p>
+                </div>
+              </div>
 
-              <div className="flex-1">
+              <div className="flex-1 hidden sm:block">
                 <h3 className="font-semibold text-gray-800">{item.name}</h3>
                 <p className="text-blue-600 font-bold mt-1">
                   Rs. {item.price.toLocaleString()}
                 </p>
               </div>
-              <div className="flex items-center border border-gray-300 rounded-md">
+
+              <div className="flex items-center justify-between sm:justify-end gap-4">
+                <div className="flex items-center border border-gray-300 rounded-md">
+                  <button
+                    onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                  >
+                    -
+                  </button>
+                  <span className="px-4 py-1 border-x border-gray-300">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <p className="font-semibold text-gray-800 w-20 text-right">
+                  Rs. {(item.price * item.quantity).toLocaleString()}
+                </p>
+
                 <button
-                  onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                  className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                  onClick={() => removeFromCart(item._id)}
+                  className="text-red-500 hover:text-red-700 text-sm font-medium"
                 >
-                  -
-                </button>
-                <span className="px-4 py-1 border-x border-gray-300">
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                  className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                >
-                  +
+                  Remove
                 </button>
               </div>
-              <p className="w-24 text-right font-semibold text-gray-800">
-                Rs. {(item.price * item.quantity).toLocaleString()}
-              </p>
-
-              <button
-                onClick={() => removeFromCart(item._id)}
-                className="text-red-500 hover:text-red-700 text-sm font-medium"
-              >
-                Remove
-              </button>
             </div>
           ))}
         </div>

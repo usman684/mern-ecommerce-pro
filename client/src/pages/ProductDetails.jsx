@@ -143,8 +143,8 @@ function ProductDetails() {
           </div>
 
           {product.stock > 0 && (
-            <div className="mt-6 flex items-center gap-3">
-              <label className="text-sm text-gray-600">Quantity:</label>
+            <div className="mt-6 flex items-center gap-3 flex-wrap">
+              <label className="text-sm text-gray-600">Quantity:</label>{" "}
               <div className="flex items-center border border-gray-300 rounded-md">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}

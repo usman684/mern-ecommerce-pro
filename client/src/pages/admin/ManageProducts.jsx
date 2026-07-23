@@ -53,8 +53,8 @@ function ManageProducts() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <table className="w-full text-left">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+        <table className="w-full text-left min-w-175">
           <thead className="bg-gray-100 text-gray-600 text-sm">
             <tr>
               <th className="px-4 py-3">Image</th>
